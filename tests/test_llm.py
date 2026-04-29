@@ -1,6 +1,5 @@
 from lvt.llm import summarize_validation_results
 
-
 sample = """
 [PASS] Config validation succeeded
 scan_name=home_network_quick_check

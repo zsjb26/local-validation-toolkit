@@ -1,6 +1,5 @@
 from openai import OpenAI
 
-
 DEFAULT_BASE_URL = "http://localhost:1234/v1"
 DEFAULT_MODEL = "deepseek-coder-v2-lite-instruct"
 
