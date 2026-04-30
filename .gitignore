@@ -16,3 +16,6 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+
+# temporary output files
+examples/
