@@ -1,7 +1,9 @@
 from pathlib import Path
 import re
+import sys
 
-LOG_PATH = Path("examples/sample_logs/windows_system_sample.txt")
+
+DEFAULT_LOG_PATH = Path("examples/sample_logs/windows_system_sample.txt")
 
 PATTERNS = {
     "ipv4_address": r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
@@ -12,9 +14,10 @@ PATTERNS = {
     "domain_field": r"(?i)\b(account domain|domain)\s*:\s*[^\r\n]+",
     "sid": r"\bS-\d-\d+(?:-\d+){1,}\b",
     "mac_address": r"\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\b",
-    "guid": r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b",
+    "guid": r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b",
     "possible_secret": r"(?i)\b(password|passwd|pwd|secret|token|api[_-]?key|credential|bearer)\b",
 }
+
 
 def scan_text(text: str) -> list[dict]:
     findings = []
@@ -23,31 +26,46 @@ def scan_text(text: str) -> list[dict]:
         for match in re.finditer(pattern, text):
             start = max(match.start() - 60, 0)
             end = min(match.end() + 60, len(text))
+
             findings.append({
                 "type": label,
                 "match": match.group(0),
-                "context": text[start:end].replace("\n", " ")
+                "context": text[start:end].replace("\n", " "),
             })
 
     return findings
 
-def main():
-    if not LOG_PATH.exists():
-        raise FileNotFoundError(f"Missing log file: {LOG_PATH}")
 
-    text = LOG_PATH.read_text(encoding="utf-8", errors="replace")
+def get_log_path() -> Path:
+    if len(sys.argv) > 1:
+        return Path(sys.argv[1])
+
+    return DEFAULT_LOG_PATH
+
+
+def main() -> int:
+    log_path = get_log_path()
+
+    if not log_path.exists():
+        print(f"Missing log file: {log_path}")
+        return 1
+
+    text = log_path.read_text(encoding="utf-8", errors="replace")
     findings = scan_text(text)
 
     if not findings:
-        print("No obvious sensitive values found.")
-        return
+        print(f"No obvious sensitive values found in: {log_path}")
+        return 0
 
-    print(f"Found {len(findings)} potential sensitive value(s):\n")
+    print(f"Found {len(findings)} potential sensitive value(s) in: {log_path}\n")
 
     for item in findings:
         print(f"[{item['type']}] {item['match']}")
         print(f"Context: {item['context']}")
         print("-" * 80)
 
+    return 2
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
