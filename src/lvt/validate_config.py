@@ -18,9 +18,7 @@ class ToolkitConfig(BaseModel):
     @field_validator("scan_name")
     @classmethod
     def validate_scan_name(cls, value: str) -> str:
-        allowed = set(
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
-        )
+        allowed = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-")
         if any(ch not in allowed for ch in value):
             raise ValueError(
                 "scan_name may only contain letters, numbers, underscores, and hyphens"

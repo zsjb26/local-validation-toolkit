@@ -1,6 +1,5 @@
 import re
 
-
 SANITIZATION_PATTERNS = {
     "windows_user_path": (
         r"C:\\Users\\[^\\\s]+",

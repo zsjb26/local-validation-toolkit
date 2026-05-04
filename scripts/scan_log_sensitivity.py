@@ -2,7 +2,6 @@ from pathlib import Path
 import re
 import sys
 
-
 DEFAULT_LOG_PATH = Path("examples/sample_logs/windows_system_sample.txt")
 
 PATTERNS = {
@@ -27,11 +26,13 @@ def scan_text(text: str) -> list[dict]:
             start = max(match.start() - 60, 0)
             end = min(match.end() + 60, len(text))
 
-            findings.append({
-                "type": label,
-                "match": match.group(0),
-                "context": text[start:end].replace("\n", " "),
-            })
+            findings.append(
+                {
+                    "type": label,
+                    "match": match.group(0),
+                    "context": text[start:end].replace("\n", " "),
+                }
+            )
 
     return findings
 

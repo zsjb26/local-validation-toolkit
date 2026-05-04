@@ -4,15 +4,11 @@ from pathlib import Path
 from lvt.windows_logs.analyzer import analyze_windows_log
 from lvt.llm import LocalLLMError
 
-DEFAULT_REQUEST = (
-    "Summarize the key Windows system issues and security-relevant findings."
-)
+DEFAULT_REQUEST = "Summarize the key Windows system issues and security-relevant findings."
 
 
 def parse_args():
-    parser = ArgumentParser(
-        description="Analyze a Windows log using a local LM Studio-backed LLM."
-    )
+    parser = ArgumentParser(description="Analyze a Windows log using a local LM Studio-backed LLM.")
 
     parser.add_argument(
         "--log",
@@ -52,6 +48,7 @@ def main() -> int:
 
     print(result)
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
