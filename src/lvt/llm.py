@@ -53,9 +53,7 @@ def summarize_validation_results(
         ) from exc
     except Exception as exc:
         # Catch-all to avoid leaking implementation details
-        raise LocalLLMError(
-            "Local LLM request failed due to an unexpected error."
-        ) from exc
+        raise LocalLLMError("Local LLM request failed due to an unexpected error.") from exc
 
     content = response.choices[0].message.content
 
