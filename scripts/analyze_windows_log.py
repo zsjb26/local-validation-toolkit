@@ -40,15 +40,7 @@ def main() -> int:
         user_request = args.request_file.read_text(encoding="utf-8", errors="replace")
     else:
         user_request = args.request or DEFAULT_REQUEST
-    try:
-        result = analyze_windows_log(log_text, user_request)
-    except LocalLLMError as exc:
-        print(exc)
-        return 2
-
-    print(result)
-    return 0
-
+    return analyze_windows_log(log_text, user_request)
 
 if __name__ == "__main__":
     raise SystemExit(main())
