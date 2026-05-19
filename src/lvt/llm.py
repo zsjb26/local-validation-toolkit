@@ -8,6 +8,51 @@ class LocalLLMError(RuntimeError):
     """Raised when the local LLM request cannot be completed safely."""
 
 
+def analyze_user_request(
+    devprompt: str,
+    user_request: str,
+    model: str = DEFAULT_MODEL,
+    base_url: str = DEFAULT_BASE_URL,
+) -> str:
+    """
+    Send a structured intent-classification prompt to the local LLM.
+
+    Raises:
+        LocalLLMError: if the request fails or returns invalid output.
+    """
+    client = OpenAI(
+        base_url=base_url,
+        api_key="lm-studio",
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": devprompt},
+                {"role": "user", "content": user_request},
+            ],
+            temperature=0.0,
+        )
+    except APIConnectionError as exc:
+        raise LocalLLMError(
+            "Local LLM service is unavailable. Start the local model server and try again."
+        ) from exc
+    except APIError as exc:
+        raise LocalLLMError(
+            "Local LLM request failed. Check the local model server and try again."
+        ) from exc
+    except Exception as exc:
+        raise LocalLLMError("Local LLM request failed due to an unexpected error.") from exc
+
+    content = response.choices[0].message.content
+
+    if not content or not content.strip():
+        raise LocalLLMError("Local LLM returned an empty response.")
+
+    return content.strip()
+
+
 def summarize_validation_results(
     validation_text: str,
     model: str = DEFAULT_MODEL,
